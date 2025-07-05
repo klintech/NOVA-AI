@@ -22,7 +22,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      console.error('Copy failed:', error);
     }
   };
 
@@ -51,7 +51,6 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           max-w-[90%] sm:max-w-[80%] md:max-w-[700px]
         `}
       >
-        {/* AI Label */}
         {!isUser && (
           <div className="text-xs text-purple-600 font-semibold mb-1">AI</div>
         )}
@@ -61,7 +60,35 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           {isUser ? (
             message.content
           ) : (
-            <ReactMarkdown className="prose prose-sm max-w-none text-gray-800">
+            <ReactMarkdown
+              className="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap"
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  return (
+                    <code
+                      className={`${
+                        inline
+                          ? 'bg-gray-200 text-purple-700 rounded px-1 py-0.5'
+                          : 'block bg-gray-100 rounded p-3 overflow-x-auto text-sm'
+                      } font-mono`}
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  );
+                },
+                pre({ node, children, ...props }) {
+                  return (
+                    <pre
+                      className="bg-gray-100 p-3 rounded-lg overflow-x-auto text-sm"
+                      {...props}
+                    >
+                      {children}
+                    </pre>
+                  );
+                }
+              }}
+            >
               {message.content}
             </ReactMarkdown>
           )}
@@ -76,11 +103,11 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           {time}
         </div>
 
-        {/* Copy Button with Animation */}
+        {/* Copy Button */}
         {!isUser && (
           <button
             onClick={handleCopy}
-            title="Copy"
+            title="Copy response"
             className="absolute top-2 right-2 p-1 rounded hover:bg-gray-100 transition"
           >
             {copied ? (
