@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Message } from '../types';
-import { Clipboard } from 'lucide-react';
+import { Clipboard, Check } from 'lucide-react';
 
 interface MessageItemProps {
   message: Message;
@@ -9,14 +9,21 @@ interface MessageItemProps {
 
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const isUser = message.role === 'user';
+  const [copied, setCopied] = useState(false);
 
   const time = new Date(message.timestamp).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
   });
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
   };
 
   return (
@@ -25,7 +32,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
         isUser ? 'justify-end' : 'justify-start'
       }`}
     >
-      {/* Avatar - Assistant */}
+      {/* Assistant Avatar */}
       {!isUser && (
         <div className="mr-2 flex-shrink-0">
           <div className="w-9 h-9 rounded-full bg-purple-200 flex items-center justify-center text-lg font-bold shadow-inner">
@@ -49,12 +56,14 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <div className="text-xs text-purple-600 font-semibold mb-1">AI</div>
         )}
 
-        {/* Content */}
+        {/* Message Content */}
         <div className="whitespace-pre-wrap break-words">
           {isUser ? (
             message.content
           ) : (
-            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <ReactMarkdown className="prose prose-sm max-w-none text-gray-800">
+              {message.content}
+            </ReactMarkdown>
           )}
         </div>
 
@@ -67,19 +76,23 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           {time}
         </div>
 
-        {/* Copy Button */}
+        {/* Copy Button with Animation */}
         {!isUser && (
           <button
             onClick={handleCopy}
             title="Copy"
             className="absolute top-2 right-2 p-1 rounded hover:bg-gray-100 transition"
           >
-            <Clipboard className="w-4 h-4 text-gray-400" />
+            {copied ? (
+              <Check className="w-4 h-4 text-green-500 animate-pulse" />
+            ) : (
+              <Clipboard className="w-4 h-4 text-gray-400" />
+            )}
           </button>
         )}
       </div>
 
-      {/* Avatar - User */}
+      {/* User Avatar */}
       {isUser && (
         <div className="ml-2 flex-shrink-0">
           <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center text-lg font-bold shadow-inner">

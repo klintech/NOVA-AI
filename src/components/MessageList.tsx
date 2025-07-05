@@ -1,20 +1,34 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Message } from '../types';
 import MessageItem from './MessageItem';
 
 interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
+  onSendMessage: (message: string) => void;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, onSendMessage }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
   const filteredMessages = messages.filter((msg) => !msg.isLoading);
+
+  const handleCopy = (id: string, content: string) => {
+    navigator.clipboard.writeText(content);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const getSuggestions = (msg: string): string[] => [
+    "Summarize this.",
+    "Give a simpler explanation.",
+    "Can you expand on this?",
+  ];
 
   return (
     <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4 bg-gradient-to-br from-blue-50 via-white to-purple-100 w-full h-full">
@@ -50,11 +64,36 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
         </div>
       ) : (
         filteredMessages.map((message) => (
-          <MessageItem key={message.id} message={message} />
+          <div key={message.id} className="relative group">
+            <MessageItem message={message} />
+            {message.role === 'assistant' && (
+              <>
+                <div className="mt-1 text-xs text-gray-500 flex items-center gap-2">
+                  <button
+                    onClick={() => handleCopy(message.id, message.content)}
+                    className="hover:text-green-500"
+                  >
+                    {copiedId === message.id ? '✅ Copied!' : '📋 Copy'}
+                  </button>
+                </div>
+                <div className="mt-1 space-y-1">
+                  {getSuggestions(message.content).map((s, i) => (
+                    <button
+                      key={i}
+                      className="text-blue-500 text-xs hover:underline mr-2"
+                      onClick={() => onSendMessage(s)}
+                    >
+                      💡 {s}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         ))
       )}
 
-      {/* Single clean typing animation */}
+      {/* Typing animation */}
       {isLoading && (
         <div className="flex items-end justify-start mb-3 animate-fade-in">
           <div className="max-w-[75%] px-4 py-3 rounded-2xl shadow bg-white/80 backdrop-blur-md border border-gray-200 text-gray-800 rounded-bl-md flex items-center gap-2">

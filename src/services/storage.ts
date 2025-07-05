@@ -1,29 +1,29 @@
-import { Message } from '../types';
+const HISTORY_KEY = 'chatgpt-lite-history';
 
-const STORAGE_KEY = 'chatgpt-lite-messages';
-
-export const saveMessages = (messages: Message[]): void => {
+export const saveToHistory = (message: string): void => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-  } catch (error) {
-    console.error('Failed to save messages:', error);
+    const existing = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const updated = [...new Set([message, ...existing])].slice(0, 20); // Keep unique + recent
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.error('Failed to save to history:', err);
   }
 };
 
-export const loadMessages = (): Message[] => {
+export const loadHistory = (): string[] => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch (error) {
-    console.error('Failed to load messages:', error);
+    const history = localStorage.getItem(HISTORY_KEY);
+    return history ? JSON.parse(history) : [];
+  } catch (err) {
+    console.error('Failed to load history:', err);
     return [];
   }
 };
 
-export const clearMessages = (): void => {
+export const clearHistory = (): void => {
   try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    console.error('Failed to clear messages:', error);
+    localStorage.removeItem(HISTORY_KEY);
+  } catch (err) {
+    console.error('Failed to clear history:', err);
   }
 };
