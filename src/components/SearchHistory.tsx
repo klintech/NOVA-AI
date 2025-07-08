@@ -1,40 +1,66 @@
 import React from 'react';
+import { Trash2, Settings2 } from 'lucide-react';
 
 interface Props {
   history: string[];
   onSelect: (message: string) => void;
   onClear: () => void;
+  minimized?: boolean;
 }
 
-const SearchHistory: React.FC<Props> = ({ history, onSelect, onClear }) => {
+const SearchHistory: React.FC<Props> = ({
+  history,
+  onSelect,
+  onClear,
+  minimized
+}) => {
   return (
-    <div className="bg-white p-4 shadow rounded-md border h-full overflow-y-auto">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold text-gray-700">Search History</h3>
-        <button
-          onClick={onClear}
-          className="text-xs text-red-500 hover:underline"
-        >
-          Clear
-        </button>
-      </div>
-
-      <ul className="space-y-2">
+    <div
+      className={`
+        bg-white h-full flex flex-col border-r border-gray-200
+        ${minimized ? 'p-1 text-xs' : 'p-2 text-sm'}
+      `}
+      style={{
+        minWidth: minimized ? '80px' : '200px',
+        maxWidth: minimized ? '120px' : '240px',
+      }}
+    >
+      {/* History List */}
+      <div className="flex-1 overflow-y-auto space-y-1">
         {history.length === 0 ? (
-          <li className="text-sm text-gray-400">No history yet.</li>
+          <p className="text-gray-400 px-2">No history yet.</p>
         ) : (
           history.map((item, index) => (
-            <li key={index}>
-              <button
-                onClick={() => onSelect(item)}
-                className="text-blue-600 text-sm hover:underline text-left w-full"
-              >
-                {item.length > 60 ? item.slice(0, 60) + '...' : item}
-              </button>
-            </li>
+            <button
+              key={index}
+              onClick={() => onSelect(item)}
+              title={item}
+              className="block text-blue-600 hover:underline text-left w-full truncate px-2"
+            >
+              {item.length > 30 ? item.slice(0, 30) + '...' : item}
+            </button>
           ))
         )}
-      </ul>
+      </div>
+
+      {/* Sticky Footer Buttons */}
+      <div className="border-t border-gray-100 pt-3 px-3 flex items-center justify-between">
+        <button
+          onClick={onClear}
+          title="Clear Chat"
+          className="text-red-500 hover:text-red-600"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+
+        <button
+          title="Settings (coming soon)"
+          disabled
+          className="text-gray-400 hover:text-purple-600"
+        >
+          <Settings2 className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 };

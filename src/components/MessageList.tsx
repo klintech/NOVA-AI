@@ -25,9 +25,9 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, onSendMe
   };
 
   const getSuggestions = (msg: string): string[] => [
-    "Summarize this.",
-    "Give a simpler explanation.",
-    "Can you expand on this?",
+    "Summarize this",
+    "Give a simpler explanation",
+    "Can you expand on this"
   ];
 
   return (
@@ -40,7 +40,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, onSendMe
               <h2 className="text-3xl font-bold mb-2 text-gray-800">
                 Welcome to <span className="text-purple-600">NOVA Lite</span>
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-4 text-center">
                 Start a conversation by typing a message or using voice input — developed by{' '}
                 <a
                   href="https://github.com/klintech"
@@ -63,11 +63,13 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, onSendMe
           </div>
         </div>
       ) : (
-        filteredMessages.map((message) => (
+        filteredMessages.map((message, index) => (
           <div key={message.id} className="relative group">
             <MessageItem message={message} />
+
             {message.role === 'assistant' && (
               <>
+                {/* Copy Button */}
                 <div className="mt-1 text-xs text-gray-500 flex items-center gap-2">
                   <button
                     onClick={() => handleCopy(message.id, message.content)}
@@ -76,14 +78,16 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading, onSendMe
                     {copiedId === message.id ? '✅ Copied!' : '📋 Copy'}
                   </button>
                 </div>
-                <div className="mt-1 space-y-1">
-                  {getSuggestions(message.content).map((s, i) => (
+
+                {/* Suggestions */}
+                <div className="mt-1 space-y-1 flex flex-wrap gap-2">
+                  {getSuggestions(message.content).map((suggestion, i) => (
                     <button
                       key={i}
-                      className="text-blue-500 text-xs hover:underline mr-2"
-                      onClick={() => onSendMessage(s)}
+                      className="text-blue-600 bg-blue-50 hover:bg-blue-100 transition text-xs px-2 py-1 rounded-full"
+                      onClick={() => onSendMessage(`${suggestion}: "${message.content}"`)}
                     >
-                      💡 {s}
+                      💡 {suggestion}
                     </button>
                   ))}
                 </div>

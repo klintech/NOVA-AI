@@ -35,7 +35,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, onSave }) =>
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div className="flex items-start space-x-2">
             <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
@@ -45,7 +45,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, onSave }) =>
             </div>
           </div>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-2">
@@ -61,7 +61,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, onSave }) =>
               required
             />
           </div>
-          
+
           <div className="flex justify-end space-x-2">
             <button
               type="button"
